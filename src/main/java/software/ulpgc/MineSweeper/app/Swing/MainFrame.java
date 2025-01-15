@@ -24,7 +24,7 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         commands = new HashMap<>();
-        setResizable(true);  // Permitir que se pueda cambiar el tamaño
+        setResizable(false);  // Permitir que se pueda cambiar el tamaño
         adjustWindowSizeBasedOnDifficulty();
         setupMainFrame();
         initializeGame(difficulty);
@@ -149,13 +149,6 @@ public class MainFrame extends JFrame {
         // Actualiza la interfaz para reflejar los cambios
         revalidate();
         repaint();
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            MainFrame mainFrame = new MainFrame();
-            mainFrame.setVisible(true);
-        });
     }
 
     public Difficulty getDifficulty() {
