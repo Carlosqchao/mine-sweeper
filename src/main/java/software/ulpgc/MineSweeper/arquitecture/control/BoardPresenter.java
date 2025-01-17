@@ -1,5 +1,6 @@
 package software.ulpgc.MineSweeper.arquitecture.control;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 
 import software.ulpgc.MineSweeper.arquitecture.model.Board;
@@ -10,10 +11,16 @@ import software.ulpgc.MineSweeper.arquitecture.view.BoardDisplay;
 public class BoardPresenter {
     private final BoardDisplay display;
     private Game game;
+    private int mines;
+
+    public int getMines() {
+        return mines;
+    }
 
     public BoardPresenter(BoardDisplay display, Game game) {
         this.display = display;
         this.game = game;
+        mines = game.difficulty().getMineCount();
         initializeDisplay();
     }
 
@@ -79,7 +86,11 @@ public class BoardPresenter {
 
     private void setFlag(int row, int col) {
         Board updatedBoard = game.board().setFlag(row, col);
-
+        if (!game.board().cells()[row][col].isRevealed() && !game.board().cells()[row][col].isFlagged()){
+            mines -= 1;
+        } else if (!game.board().cells()[row][col].isRevealed() && game.board().cells()[row][col].isFlagged()){
+            mines += 1;
+        }
         System.out.println("Updated board: ");
         System.out.println(updatedBoard);
 

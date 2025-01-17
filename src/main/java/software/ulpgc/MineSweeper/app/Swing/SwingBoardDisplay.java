@@ -1,6 +1,5 @@
 package software.ulpgc.MineSweeper.app.Swing;
 
-import software.ulpgc.MineSweeper.arquitecture.model.Board;
 import software.ulpgc.MineSweeper.arquitecture.model.Cell;
 import software.ulpgc.MineSweeper.arquitecture.model.Game;
 import software.ulpgc.MineSweeper.arquitecture.view.BoardDisplay;

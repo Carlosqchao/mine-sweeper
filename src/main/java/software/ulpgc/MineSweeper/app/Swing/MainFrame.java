@@ -22,12 +22,14 @@ public class MainFrame extends JFrame {
     private Difficulty difficulty = Difficulty.EASY;
     private JPanel boardPanel; // El panel donde se mostrará el tablero
 
+
     public MainFrame() {
         commands = new HashMap<>();
         setResizable(false);  // Permitir que se pueda cambiar el tamaño
         adjustWindowSizeBasedOnDifficulty();
         setupMainFrame();
         initializeGame(difficulty);
+        addStatusBar();
     }
 
     private void adjustWindowSizeBasedOnDifficulty() {
@@ -53,7 +55,6 @@ public class MainFrame extends JFrame {
         setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         setLocationRelativeTo(null); // Centra la ventana al inicio
         setLayout(new BorderLayout());
-        addStatusBar();
 
         // Listener para mantener la ventana centrada cuando se cambia el tamaño
         addComponentListener(new java.awt.event.ComponentAdapter() {
@@ -68,7 +69,7 @@ public class MainFrame extends JFrame {
         statusBar.setLayout(new BorderLayout());
         statusBar.setBackground(Color.LIGHT_GRAY);
 
-        JLabel mineCounter = new JLabel("Mines: 10", SwingConstants.CENTER);
+        JLabel mineCounter = new JLabel("Mines: " + presenter.getMines(), SwingConstants.CENTER);
         mineCounter.setPreferredSize(new Dimension(100, 30));
 
         Map<String, ImageIcon> icons = new HashMap<>();
@@ -152,11 +153,9 @@ public class MainFrame extends JFrame {
         Game game = new Game(difficulty);
         SwingBoardDisplay boardDisplay = new SwingBoardDisplay(game);
         presenter = new BoardPresenter(boardDisplay, game);
-
         boardPanel = new JPanel(new BorderLayout());
         boardPanel.add(boardDisplay, BorderLayout.CENTER);
         add(boardPanel, BorderLayout.CENTER);
-
         // Actualiza la interfaz para reflejar los cambios
         revalidate();
         repaint();
