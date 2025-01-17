@@ -124,16 +124,13 @@ public class MainFrame extends JFrame {
         SwingDifficultyDialog swingDifficultyDialog = new SwingDifficultyDialog(difficulties);
 
         JComboBox<String> selector = swingDifficultyDialog.getSelector();
-        selector.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Difficulty selectedDifficulty = swingDifficultyDialog.getDifficulty();
-                commands.get("select difficulty").execute(selectedDifficulty);
-                difficulty = selectedDifficulty;
-                initializeGame(difficulty);
-                adjustWindowSizeBasedOnDifficulty();
-                setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-            }
+        selector.addActionListener(e -> {
+            Difficulty selectedDifficulty = swingDifficultyDialog.getDifficulty();
+            commands.get("select difficulty").execute(selectedDifficulty);
+            difficulty = selectedDifficulty;
+            initializeGame(difficulty);
+            adjustWindowSizeBasedOnDifficulty();
+            setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         });
         return swingDifficultyDialog;
     }

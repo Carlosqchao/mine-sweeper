@@ -8,15 +8,7 @@ public interface BoardDisplay {
 
     void on(String event, Clicked clicked);
 
-    record Square(int x, int y, int length) {
-        public boolean isAt(int x, int y) {
-            return Math.abs(x - this.x) < length && Math.abs(y - this.y) < length;
-        }
-    }
-
     interface Clicked {
-        Clicked Null = point -> {
-        };
 
         void on(java.awt.Point point);
     }

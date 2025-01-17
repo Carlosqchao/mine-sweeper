@@ -13,7 +13,7 @@ public class BoardPresenter {
     private final BoardDisplay display;
     private Game game;
     private boolean firstClick = true;
-    private GameTimer gameTimer;
+    private final GameTimer gameTimer;
 
     public BoardPresenter(BoardDisplay display, Game game, GameTimer gameTimer) {
         this.display = display;
@@ -85,10 +85,7 @@ public class BoardPresenter {
     }
 
     private boolean gameIsOver() {
-        if (game.checkStatus() != GameStatus.Current) {
-            return true;
-        }
-        return false;
+        return game.checkStatus() != GameStatus.Current;
     }
 
     private void startTimer() {
@@ -107,8 +104,7 @@ public class BoardPresenter {
 
         int rows = game.board().rows();
         int columns = game.board().columns();
-        ClickPosition result = new ClickPosition(row, col, rows, columns);
-        return result;
+        return new ClickPosition(row, col, rows, columns);
     }
 
     private boolean inBounds(ClickPosition clickPosition) {

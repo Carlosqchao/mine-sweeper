@@ -7,7 +7,6 @@ import java.awt.*;
 
 public class SwingTimeDisplay extends JPanel {
     private final JLabel timerLabel = new JLabel("Time: 00:00");
-    private GameTimer gameTimer;
 
     private SwingTimeDisplay() {
         setPreferredSize(new Dimension(100, 30));
@@ -18,7 +17,7 @@ public class SwingTimeDisplay extends JPanel {
 
     public static SwingTimeDisplay createWithTimer() {
         SwingTimeDisplay display = new SwingTimeDisplay();
-        display.gameTimer = new GameTimer(display::updateTime);
+        new GameTimer(display::updateTime);
         return display;
     }
 

@@ -5,5 +5,4 @@ import java.io.IOException;
 public interface Image {
     byte[] content() throws IOException;
 
-    java.awt.Image image();
 }
