@@ -1,5 +1,6 @@
 package software.ulpgc.MineSweeper.app.Swing;
 
+import software.ulpgc.MineSweeper.arquitecture.io.FileImageLoader;
 import software.ulpgc.MineSweeper.arquitecture.model.Cell;
 import software.ulpgc.MineSweeper.arquitecture.model.Game;
 import software.ulpgc.MineSweeper.arquitecture.view.BoardDisplay;
@@ -16,33 +17,15 @@ public class SwingBoardDisplay extends JPanel implements BoardDisplay {
     private Game game;
     private final Map<String, ImageIcon> images;
     private final Map<String, Clicked> eventListeners = new HashMap<>();
-
     private int row;
     private int col;
 
     public SwingBoardDisplay(Game game) {
         this.game = game;
-        this.images = loadIcons();
+        FileImageLoader loader = new FileImageLoader("src/images/");
+        this.images = loader.load();
         setDoubleBuffered(true);
         addMouseListener(createMouseListener());
-    }
-
-    private Map<String, ImageIcon> loadIcons() {
-        Map<String, ImageIcon> icons = new HashMap<>();
-        try {
-            icons.put("default", new ImageIcon("src/images/default.png"));
-            icons.put("flag", new ImageIcon("src/images/flag.png"));
-            icons.put("mine", new ImageIcon("src/images/mine.png"));
-            icons.put("revealed", new ImageIcon("src/images/revealed.png"));
-            icons.put("mineSelected", new ImageIcon("src/images/mineSelected.png"));
-            for (int i = 1; i <= 8; i++) {
-                icons.put(String.valueOf(i), new ImageIcon("src/images/" + i + ".png"));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading images: " + e.getMessage());
-        }
-        return icons;
     }
 
     @Override
@@ -72,19 +55,20 @@ public class SwingBoardDisplay extends JPanel implements BoardDisplay {
 
     private void drawCell(Graphics g, Cell cell, Square square) {
         ImageIcon icon;
+
         if (cell.isRevealed()) {
-            if (cell.hasMine()  && cell == game.board().cells()[row][col]) {
-                icon = images.get("mineSelected");
-            }else if (cell.hasMine()){
-                icon = images.get("mine");
+            if (cell.hasMine() && cell == game.board().cells()[row][col]) {
+                icon = images.get("mineSelected.png");
+            } else if (cell.hasMine()) {
+                icon = images.get("mine.png");
             } else {
                 String adjacent = String.valueOf(cell.adjacentMines());
-                icon = images.getOrDefault(adjacent, images.get("revealed"));
+                icon = images.getOrDefault(adjacent + ".png", images.get("Revealed.png"));
             }
         } else if (cell.isFlagged()) {
-            icon = images.get("flag");
+            icon = images.get("flag.png");
         } else {
-            icon = images.get("default");
+            icon = images.get("Default.png");
         }
 
         if (icon != null) {
@@ -106,14 +90,11 @@ public class SwingBoardDisplay extends JPanel implements BoardDisplay {
                     Clicked leftClick = eventListeners.get("cell-click");
                     Clicked rightClick = eventListeners.get("cell-right-click");
 
-                    
                     if (SwingUtilities.isLeftMouseButton(e)) {
                         leftClick.on(new Point(col, row));
                     } else if (SwingUtilities.isRightMouseButton(e)) {
                         rightClick.on(new Point(col, row));
-
                     }
-
                 }
             }
         };
@@ -142,7 +123,7 @@ public class SwingBoardDisplay extends JPanel implements BoardDisplay {
 
     @Override
     public void showLose() {
-        game = game.revealMines();
+        this.game = game.revealMines();
     }
 
     @Override

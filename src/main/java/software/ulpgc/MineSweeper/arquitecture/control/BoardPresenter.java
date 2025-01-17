@@ -1,32 +1,25 @@
 package software.ulpgc.MineSweeper.arquitecture.control;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
+
 
 import software.ulpgc.MineSweeper.arquitecture.model.Board;
 import software.ulpgc.MineSweeper.arquitecture.model.Game;
 import software.ulpgc.MineSweeper.arquitecture.model.GameStatus;
 import software.ulpgc.MineSweeper.arquitecture.view.BoardDisplay;
+import software.ulpgc.MineSweeper.arquitecture.model.GameTimer;
 
 public class BoardPresenter {
     private final BoardDisplay display;
     private Game game;
-    private int mines;
+    private boolean firstClick = true;
+    private GameTimer gameTimer;
 
-    public int getMines() {
-        return mines;
-    }
-
-    public BoardPresenter(BoardDisplay display, Game game) {
+    public BoardPresenter(BoardDisplay display, Game game, GameTimer gameTimer) {
         this.display = display;
         this.game = game;
-        mines = game.difficulty().getMineCount();
+        this.gameTimer = gameTimer;
         initializeDisplay();
-    }
-
-    public void initializeNewGame() {
-        game = new Game(game.difficulty());
-        display.show(game);
     }
 
     private void initializeDisplay() {
@@ -36,77 +29,45 @@ public class BoardPresenter {
     }
 
     private void handleCellClick(Point2D point) {
-        if (game.checkStatus() != GameStatus.Current) {
-            return;
+        if (gameIsOver()) return;
+
+        ClickPosition clickPosition = getClickPosition(point);
+
+        if (inBounds(clickPosition)) {
+            updateGameBoard(clickPosition.clickedRow(), clickPosition.clickedCol(), firstClick);
         }
 
-        System.out.println("Clicked on " + point);
+        startTimer();
 
-        int row = (int) point.getY();
-        int col = (int) point.getX();
-
-        int rows = game.board().rows();
-        int columns = game.board().columns();
-
-        if (row < rows && col < columns) {
-            updateGameBoard(row, col);
-        }
-
-        switch (game.checkStatus()) {
-            case GameStatus.Win -> display.showWin();
-            case GameStatus.Lose -> display.showLose();
-            case GameStatus.Current -> display.show(game);
-        }
-
+        checkGameStatus();
     }
 
     private void handleCellClickRigth(Point2D point) {
-        if (game.checkStatus() != GameStatus.Current) {
-            return;
-        }
-        
-        System.out.println("Clicked on " + point);
+        if (gameIsOver()) return;
 
-        int row = (int) point.getY();
-        int col = (int) point.getX();
+        ClickPosition clickPosition = getClickPosition(point);
 
-        int rows = game.board().rows();
-        int columns = game.board().columns();
-
-        if (row < rows && col < columns) {
-            setFlag(row, col);
+        if (inBounds(clickPosition)) {
+            setFlag(clickPosition.clickedRow(), clickPosition.clickedCol());
         }
 
-        switch (game.checkStatus()) {
-            case GameStatus.Win -> display.showWin();
-            case GameStatus.Lose -> display.showLose();
-            case GameStatus.Current -> display.show(game);
-        }
     }
 
     private void setFlag(int row, int col) {
         Board updatedBoard = game.board().setFlag(row, col);
-        if (!game.board().cells()[row][col].isRevealed() && !game.board().cells()[row][col].isFlagged()){
-            mines -= 1;
-        } else if (!game.board().cells()[row][col].isRevealed() && game.board().cells()[row][col].isFlagged()){
-            mines += 1;
-        }
-        System.out.println("Updated board: ");
-        System.out.println(updatedBoard);
-
         this.game = game.updateBoard(updatedBoard);
 
         display.show(game);
     }
 
-    private void updateGameBoard(int row, int col) {
+    private void updateGameBoard(int row, int col, boolean firstClick) {
+        if (firstClick) {
+            game = game.updateBoard(new Board(game.board().rows(), game.board().columns(), game.board().mineCount(),
+                    row, col, game.board().observers()));
+        }
+
         Board updatedBoard = game.board().updateCell(row, col);
-
-        System.out.println("Updated board: ");
-        System.out.println(updatedBoard);
-
         this.game = game.updateBoard(updatedBoard);
-
         display.show(game);
     }
 
@@ -114,18 +75,57 @@ public class BoardPresenter {
         return game;
     }
 
-    public void updateCell(int row, int col) {
-        Board updatedBoard = game.board().updateCell(row, col);
-
-        game = game.updateBoard(updatedBoard);
-
-        display.show(game);
+    public void updateGameStatusChecker(GameStatus gameStatus) {
+        game = new Game(game.board(), game.difficulty(), gameStatus);
     }
 
     public void updateGame(Game newGame) {
         this.game = newGame;
-
         display.show(game);
     }
 
+    private boolean gameIsOver() {
+        if (game.checkStatus() != GameStatus.Current) {
+            return true;
+        }
+        return false;
+    }
+
+    private void startTimer() {
+        if (firstClick) {
+            gameTimer.resetTimer();
+            gameTimer.startTimer();
+            firstClick = false;
+        }
+    }
+
+    private record ClickPosition(int clickedRow, int clickedCol, int rows, int columns) { }
+
+    private ClickPosition getClickPosition(Point2D point) {
+        int row = (int) point.getY();
+        int col = (int) point.getX();
+
+        int rows = game.board().rows();
+        int columns = game.board().columns();
+        ClickPosition result = new ClickPosition(row, col, rows, columns);
+        return result;
+    }
+
+    private boolean inBounds(ClickPosition clickPosition) {
+        return clickPosition.clickedRow() < clickPosition.rows() && clickPosition.clickedCol() < clickPosition.columns();
+    }
+
+    private void checkGameStatus() {
+        switch (game.checkStatus()) {
+            case GameStatus.Win -> {
+                display.showWin();
+                gameTimer.stopTimer();
+            }
+            case GameStatus.Lose -> {
+                display.showLose();
+                gameTimer.stopTimer();
+            }
+            case GameStatus.Current -> display.show(game);
+        }
+    }
 }
