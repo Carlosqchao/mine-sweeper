@@ -40,7 +40,7 @@ public class SwingDifficultyDialog extends JPanel implements SelectDifficultyDia
                 return BaseDifficulty.HARD;
             }
             case "Personalized" -> {
-                return SwingCustomDifficultyDialog.setPersonalizedTable();
+                return new SwingCustomDifficultyDialog().getCustomDifficulty();
             }
             default -> {
                 return null;

@@ -11,6 +11,12 @@ import java.awt.*;
 public class SwingCustomDifficultyDialog implements CustomDifficultyDialog {
 
 
+    @Override
+    public Difficulty getCustomDifficulty() {
+      return setPersonalizedTable();
+    }
+
+
     public static Difficulty setPersonalizedTable() {
         JPanel panel = new JPanel(new GridLayout(3, 2, 5, 10));
 
@@ -32,11 +38,11 @@ public class SwingCustomDifficultyDialog implements CustomDifficultyDialog {
                 int mines = Integer.parseInt(fieldMines.getText());
 
                 if (!areValidParameters(rows, columns, mines)) {
-                    showErrorMessage("""
-                            Please enter valid values.
-                            The number of mines must be positive and less than the third of the total number of cells.
-                            Columns must be between 8-32.
-                            Rows must be between 8-24.""");
+                    showErrorMessage("Please enter valid values." +
+                            "\nThe number of mines must be positive and less than the third of the total number of cells."
+                            +
+                            "\nColumns must be between 8-32." +
+                            "\nRows must be between 8-24.");
                 } else {
                     return new CustomDifficulty(rows, columns, mines);
 

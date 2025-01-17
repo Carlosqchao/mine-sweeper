@@ -14,6 +14,7 @@ public class FileImageLoader implements ImageLoader {
     private final File folder;
     private final FileImageDeserializer deserializer;
 
+
     public FileImageLoader(String path) {
         this.folder = new File(path);
         this.deserializer = new FileImageDeserializer();
@@ -42,7 +43,7 @@ public class FileImageLoader implements ImageLoader {
             byte[] content = Files.readAllBytes(file.toPath());
             Image image = new Image() {
                 @Override
-                public byte[] content() {
+                public byte[] content(){
                     return content;
                 }
 
